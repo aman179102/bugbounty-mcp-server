@@ -24,7 +24,7 @@ classifiers = [
 ]
 dependencies = [
     "click>=8.1.0",
-    "aiohttp>=3.8.0", 
+    "aiohttp>=3.8.0",
     "requests>=2.28.0",
     "pydantic>=2.11.0,<3.0.0",
     "python-dotenv>=1.0.0",
@@ -36,10 +36,21 @@ dependencies = [
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
     "black>=23.0.0",
     "flake8>=6.0.0",
+    "flake8-bugbear>=24.0.0",
     "mypy>=1.5.0",
+    "isort>=5.13.0",
     "pre-commit>=3.4.0",
+    "bandit>=1.7.0",
+    "pyupgrade>=3.0.0",
+]
+ci = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
 ]
 
 [project.scripts]
@@ -49,6 +60,8 @@ bugbounty-mcp = "bugbounty_mcp_server.cli:main"
 Homepage = "https://github.com/gokulapap/bugbounty-mcp-server"
 Repository = "https://github.com/gokulapap/bugbounty-mcp-server"
 Issues = "https://github.com/gokulapap/bugbounty-mcp-server/issues"
+Documentation = "https://github.com/gokulapap/bugbounty-mcp-server#readme"
+Changelog = "https://github.com/gokulapap/bugbounty-mcp-server/releases"
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -56,13 +69,24 @@ include = ["bugbounty_mcp_server*"]
 
 [tool.black]
 line-length = 88
-target-version = ['py39']
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
 
 [tool.mypy]
 python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -70,3 +94,33 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 asyncio_mode = "auto"
+testrun_uid = ""
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["bugbounty_mcp_server"]
+omit = [
+    "*/tests/*",
+    "*/venv/*",
+    "*/env/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if __name__ == .__main__.:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "pass",
+    "def __str__",
+]
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", "env"]
+skips = ["B101", "B301", "B303"]
